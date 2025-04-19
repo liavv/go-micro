@@ -2,7 +2,9 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"html/template"
+	"os"
 	"time"
 
 	"github.com/vanng822/go-premailer/premailer"
@@ -95,7 +97,8 @@ func (m *Mail) SendSMTPMessage(msg Message) error {
 
 func (m *Mail) buildHTMLMessage(msg Message) (string, error) {
 	templateToRender := "./templates/mail.html.gohtml"
-
+	dir, _ := os.Getwd()
+	fmt.Println("Working directory:", dir)
 	t, err := template.New("email-html").ParseFiles(templateToRender)
 	if err != nil {
 		return "", err
