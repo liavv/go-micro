@@ -37,12 +37,11 @@ func (l *LogEntry) Insert(entry LogEntry) error {
 	collection := client.Database("logs").Collection("logs")
 
 	_, err := collection.InsertOne(context.TODO(), LogEntry{
-		Name:      entry.Name,
-		Data:      entry.Data,
+		Name: entry.Name,
+		Data: entry.Data,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	})
-
 	if err != nil {
 		log.Println("Error inserting into logs:", err)
 		return err
@@ -65,7 +64,6 @@ func (l *LogEntry) All() ([]*LogEntry, error) {
 		log.Println("Finding all docs error:", err)
 		return nil, err
 	}
-
 	defer cursor.Close(ctx)
 
 	var logs []*LogEntry
@@ -75,7 +73,7 @@ func (l *LogEntry) All() ([]*LogEntry, error) {
 
 		err := cursor.Decode(&item)
 		if err != nil {
-			log.Println("Error Decoding log into slice:", err)
+			log.Print("Error decoding log into slice:", err)
 			return nil, err
 		} else {
 			logs = append(logs, &item)
@@ -83,7 +81,6 @@ func (l *LogEntry) All() ([]*LogEntry, error) {
 	}
 
 	return logs, nil
-
 }
 
 func (l *LogEntry) GetOne(id string) (*LogEntry, error) {
@@ -98,14 +95,12 @@ func (l *LogEntry) GetOne(id string) (*LogEntry, error) {
 	}
 
 	var entry LogEntry
-
 	err = collection.FindOne(ctx, bson.M{"_id": docID}).Decode(&entry)
 	if err != nil {
 		return nil, err
 	}
 
 	return &entry, nil
-
 }
 
 func (l *LogEntry) DropCollection() error {
@@ -113,12 +108,12 @@ func (l *LogEntry) DropCollection() error {
 	defer cancel()
 
 	collection := client.Database("logs").Collection("logs")
+
 	if err := collection.Drop(ctx); err != nil {
 		return err
 	}
 
 	return nil
-
 }
 
 func (l *LogEntry) Update() (*mongo.UpdateResult, error) {
@@ -126,6 +121,7 @@ func (l *LogEntry) Update() (*mongo.UpdateResult, error) {
 	defer cancel()
 
 	collection := client.Database("logs").Collection("logs")
+
 	docID, err := primitive.ObjectIDFromHex(l.ID)
 	if err != nil {
 		return nil, err

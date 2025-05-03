@@ -19,27 +19,27 @@ const webPort = "80"
 var counts int64
 
 type Config struct {
-	DB     *sql.DB
+	DB *sql.DB
 	Models data.Models
 }
 
 func main() {
-	log.Println("Dtarting authentication service")
+	log.Println("Starting authentication service")
 
-	//connect to DB
+	// connect to DB
 	conn := connectToDB()
 	if conn == nil {
-		log.Panic("Cant connect to Postgres!")
+		log.Panic("Can't connect to Postgres!")
 	}
 
-	//set up config
+	// set up config
 	app := Config{
-		DB:     conn,
+		DB: conn,
 		Models: data.New(conn),
 	}
 
 	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%s", webPort),
+		Addr: fmt.Sprintf(":%s", webPort),
 		Handler: app.routes(),
 	}
 
@@ -51,37 +51,21 @@ func main() {
 
 func openDB(dsn string) (*sql.DB, error) {
 	db, err := sql.Open("pgx", dsn)
-
 	if err != nil {
 		return nil, err
 	}
 
 	err = db.Ping()
-
 	if err != nil {
 		return nil, err
 	}
-
-	var currentDB string
-	err = db.QueryRow("SELECT current_database()").Scan(&currentDB)
-	if err != nil {
-		log.Fatal("Failed to check current database:", err)
-	}
-	log.Println("✅ Connected to database:", currentDB)
-
-	var ip, dbname string
-	err = db.QueryRow("SELECT inet_server_addr(), current_database()").Scan(&ip, &dbname)
-	if err != nil {
-		log.Fatal("❌ Failed to get connection info:", err)
-	}
-	log.Printf("✅ Go is connected to DB '%s' on IP: %s\n", dbname, ip)
 
 	return db, nil
 }
 
 func connectToDB() *sql.DB {
 	dsn := os.Getenv("DSN")
-	log.Println("dsn is ", dsn)
+
 	for {
 		connection, err := openDB(dsn)
 		if err != nil {
@@ -96,9 +80,9 @@ func connectToDB() *sql.DB {
 			log.Println(err)
 			return nil
 		}
-		log.Println("Backing off for two seconds ...")
+
+		log.Println("Backing off for two seconds....")
 		time.Sleep(2 * time.Second)
 		continue
-
 	}
 }

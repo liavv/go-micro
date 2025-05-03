@@ -1,8 +1,7 @@
-# build a tiny docker image
 FROM alpine:latest
 
 RUN mkdir /app
 
 COPY authApp /app
 
-CMD [ "/app/authApp" ]
+CMD [ "/app/authApp"]
